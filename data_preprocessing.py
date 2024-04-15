@@ -4,10 +4,11 @@ COLUMNS_TO_DROP = [
     'Timestamp',
     'Affiliations',
     'Platforms Used',
+    'Social Media User?'
 ]
 
 
-def data_preprocess(df: pd.DataFrame):
+def data_cleanup(df: pd.DataFrame):
     df.rename(columns={'1. What is your age?': 'Age', '2. Gender': 'Gender', '3. Relationship Status': 'Relationship Status',
                        '4. Occupation Status': 'Occupation',
                        '5. What type of organizations are you affiliated with?': 'Affiliations',
@@ -66,3 +67,22 @@ def data_preprocess(df: pd.DataFrame):
     df.loc[df['Hours Per Day'] == 'Between 1 and 2 hours', 'Hours Per Day'] = 1.5
     df.loc[df['Hours Per Day'] == 'Between 4 and 5 hours', 'Hours Per Day'] = 4.5
     df.loc[df['Hours Per Day'] == 'Less than an Hour', 'Hours Per Day'] = 0.5
+
+    df.loc[df['Age'] == 91, 'Age'] = 19
+
+    return df
+
+
+def handle_nominal_data(df: pd.DataFrame, feature: str):
+    dummy_df = pd.get_dummies(df[feature], drop_first=True)
+
+    # Convert True/False values in dummy_df to 0/1
+    dummy_df = dummy_df.astype('int64')
+
+    # Concatenate dummy variables with original DataFrame
+    df = pd.concat([df, dummy_df], axis=1)
+
+    # Drop the original 'Relationship Status' column
+    df.drop(columns=[feature], inplace=True)
+
+    return df
