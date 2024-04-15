@@ -17,15 +17,6 @@ from data_preprocessing import *
 DATASET_PATH = './Data/dataset.csv'
 
 
-def generate_heatmap(df: pd.DataFrame):
-    corr = df.corr()
-    fig, ax = plt.subplots(figsize=(16, 12))
-    sns.heatmap(corr, annot=True, cmap="YlGnBu", ax=ax)
-    plt.title('Heat map of how each feature is correlated to each other')
-
-    plt.show()
-
-
 def generate_corr_hist(df: pd.DataFrame, variables: List):
     # Calculate correlation for each variable
     fig, axes = plt.subplots(nrows=2, ncols=3, figsize=(20, 15))
@@ -41,6 +32,14 @@ def generate_corr_hist(df: pd.DataFrame, variables: List):
         axes[i//3, i % 3].set_ylim([-1, 1])
 
     plt.tight_layout()
+    plt.show()
+
+
+def generate_heatmap(df: pd.DataFrame):
+    corr = df.corr()
+    fig, ax = plt.subplots(figsize=(16, 12))
+    sns.heatmap(corr, annot=True, cmap='YlGnBu', ax=ax)
+    plt.title("Heat map of how each feature is correlated to each other")
     plt.show()
 
 
