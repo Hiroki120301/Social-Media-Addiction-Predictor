@@ -1,4 +1,6 @@
 import pandas as pd
+from sklearn.preprocessing import StandardScaler
+
 
 COLUMNS_TO_DROP = [
     'Timestamp',
@@ -86,3 +88,11 @@ def handle_nominal_data(df: pd.DataFrame, feature: str):
     df.drop(columns=[feature], inplace=True)
 
     return df
+
+
+def standardize_data(df: pd.DataFrame):
+    standard_scaler = StandardScaler()
+    df_std = standard_scaler.fit_transform(df)
+    df_std_df = pd.DataFrame(df_std, columns=df.columns)
+
+    return df_std_df

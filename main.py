@@ -1,7 +1,4 @@
-from typing import List
 import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import KMeans
@@ -12,46 +9,24 @@ import networkx as nx
 from pgmpy.estimators import HillClimbSearch, BicScore
 import dowhy
 from data_preprocessing import *
+from graph import *
 
 
 DATASET_PATH = './Data/dataset.csv'
 
 
-def generate_corr_hist(df: pd.DataFrame, variables: List):
-    # Calculate correlation for each variable
-    fig, axes = plt.subplots(nrows=2, ncols=3, figsize=(20, 15))
-    for i, variable in enumerate(variables):
-        corr = df.corr()[variable]
-
-        # Plot correlation
-        sns.barplot(x=corr.index, y=corr.values, ax=axes[i//3, i % 3])
-        axes[i//3, i % 3].set_title(f'Correlation with {variable}')
-        axes[i//3, i % 3].set_xlabel('Variables')
-        axes[i//3, i % 3].set_ylabel('Correlation Coefficient')
-        axes[i//3, i % 3].tick_params(axis='x', rotation=90)
-        axes[i//3, i % 3].set_ylim([-1, 1])
-
-    plt.tight_layout()
-    plt.show()
-
-
-def generate_heatmap(df: pd.DataFrame):
-    corr = df.corr()
-    fig, ax = plt.subplots(figsize=(16, 12))
-    sns.heatmap(corr, annot=True, cmap='YlGnBu', ax=ax)
-    plt.title("Heat map of how each feature is correlated to each other")
-    plt.show()
-
-
 if __name__ == '__main__':
+    # Loading dataset
     print("Reading the dataset...")
     df = pd.read_csv(DATASET_PATH)
     print("Dataset loaded.")
 
+    # Clean up dataset
     print("Performing data cleanup...")
     df = data_cleanup(df=df)
     print("Data cleanup done.")
 
+    # Data preprocessing
     print("Handling nominal data...")
     df = handle_nominal_data(df, 'Relationship Status')
     df = handle_nominal_data(df, 'Occupation')
@@ -75,3 +50,7 @@ if __name__ == '__main__':
     generate_corr_hist(df=df, variables=['Hours Per Day', 'ADHD Score', 'Anxiety Score',
                                          'Self Esteem Score', 'Depression Score', 'Total Score'])
     print("Correlation histograms generated.")
+
+    print("Standaridize dataset...")
+    df_std = standardize_data(df=df)
+    print(df_std.head())
