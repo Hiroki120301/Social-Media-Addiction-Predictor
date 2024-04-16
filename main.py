@@ -1,5 +1,4 @@
 import pandas as pd
-from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import KMeans
 from dowhy import CausalModel

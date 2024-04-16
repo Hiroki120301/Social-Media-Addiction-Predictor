@@ -1,3 +1,7 @@
 pandas
 seaborn
-matplotlib.pyplot
+matplotlib
+scikit-learn
+dowhy
+pgmpy
+networkx
