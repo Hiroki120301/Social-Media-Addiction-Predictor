@@ -10,7 +10,7 @@ COLUMNS_TO_DROP = [
 ]
 
 
-def data_cleanup(df: pd.DataFrame):
+def data_cleanup(df):
     df.rename(columns={'1. What is your age?': 'Age', '2. Gender': 'Gender', '3. Relationship Status': 'Relationship Status',
                        '4. Occupation Status': 'Occupation',
                        '5. What type of organizations are you affiliated with?': 'Affiliations',
@@ -75,7 +75,7 @@ def data_cleanup(df: pd.DataFrame):
     return df
 
 
-def handle_nominal_data(df: pd.DataFrame, feature: str):
+def handle_nominal_data(df, feature: str):
     dummy_df = pd.get_dummies(df[feature], drop_first=True)
 
     # Convert True/False values in dummy_df to 0/1
@@ -90,7 +90,7 @@ def handle_nominal_data(df: pd.DataFrame, feature: str):
     return df
 
 
-def standardize_data(df: pd.DataFrame):
+def standardize_data(df):
     standard_scaler = StandardScaler()
     df_std = standard_scaler.fit_transform(df)
     df_std_df = pd.DataFrame(df_std, columns=df.columns)
