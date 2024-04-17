@@ -1,0 +1,6 @@
+pyspark
+pandas
+seaborn
+matplotlib
+typing
+matplotlib

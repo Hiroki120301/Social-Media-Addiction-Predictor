@@ -4,7 +4,7 @@ from pyspark.sql.functions import when, col, trim
 from pyspark.sql import SparkSession
 from pyspark.sql import functions as F
 from pyspark.ml.feature import VectorAssembler, StandardScaler
-
+from graph import *
 
 COLUMNS_TO_DROP = [
     'Timestamp',
@@ -37,7 +37,6 @@ def data_cleanup(df: ps.DataFrame):
         .withColumnRenamed('19. On a scale of 1 to 5, how frequently does your interest in daily activities fluctuate?', 'Depression Q2') \
         .withColumnRenamed('20. On a scale of 1 to 5, how often do you face issues regarding sleep?', 'Depression Q3')
     df = df.drop(*COLUMNS_TO_DROP)
-    df.printSchema()
     # Replace values in 'Gender' column
     df = df.withColumn("Gender",
                        when(trim(col("Gender")) == "NB", "Non-Binary")
@@ -112,11 +111,60 @@ def handle_nominal_data(df, feature):
 
 
 def standardize_data(df):
-    vector_assembler = VectorAssembler(
-        inputCols=df.columns, outputCol='SS_features')
-    temp_df = vector_assembler.transform(df)
-    standard_scaler = StandardScaler(
-        inputCol='SS_features', outputCol='scaled')
-    df = standard_scaler.fit(temp_df).transform(temp_df)
 
-    return df
+    vec_assembler = VectorAssembler(inputCols=df.columns,
+                                    outputCol='features')
+
+    final_data = vec_assembler.transform(df)
+
+    scaler = StandardScaler(inputCol="features",
+                            outputCol="scaledFeatures",
+                            withStd=True,
+                            withMean=False)
+
+    # Compute summary statistics by fitting the StandardScaler
+    scalerModel = scaler.fit(final_data)
+
+    # Normalize each feature to have unit standard deviation.
+    final_data = scalerModel.transform(final_data)
+
+    return final_data
+
+
+def preprocess(spark, df):
+    # Clean up dataset
+    print("Performing data cleanup...")
+    df = data_cleanup(df=df)
+    print("Data cleanup done.")
+
+    # Data preprocessing
+    print("Handling nominal data...")
+    df = spark.createDataFrame(handle_nominal_data(df, 'Relationship Status'))
+    df = spark.createDataFrame(handle_nominal_data(df, 'Occupation'))
+    df = spark.createDataFrame(handle_nominal_data(df, 'Gender'))
+    print("Nominal data handled.")
+    print(df.show(5))
+
+    # Plot histograms directly from PySpark DataFrame
+    df.toPandas().hist(figsize=(16, 12))
+    plt.savefig('data_dist_hist.png')  # Save the plot as an image
+
+    print("Generating heatmap...")
+    generate_heatmap(df=df)
+    print("Heatmap generated.")
+
+    print("Dropping unnecessary columns...")
+    columns_to_drop = ['Male', 'Non-Binary', 'Non-binary']
+    df = df.drop(*columns_to_drop)
+    print("Columns dropped.")
+
+    print("Generating correlation histograms...")
+    generate_corr_hist(df=df, variables=['Hours Per Day', 'ADHD Score', 'Anxiety Score',
+                                         'Self Esteem Score', 'Depression Score', 'Total Score'])
+    print("Correlation histograms generated.")
+
+    print("Standaridize dataset...")
+    final_df = standardize_data(df)
+    print(final_df.show(5))
+
+    return final_df

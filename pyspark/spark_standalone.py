@@ -1,22 +1,12 @@
-import pandas as pd
-from sklearn.preprocessing import StandardScaler
-from sklearn.cluster import KMeans
-from dowhy import CausalModel
-from pgmpy.models import BayesianModel
-from pgmpy.estimators import BayesianEstimator
-import networkx as nx
-from pgmpy.estimators import HillClimbSearch, BicScore
-import dowhy
+from pyspark.sql import SparkSession
+from matplotlib import pyplot as plt
 from data_preprocessing import *
 from graph import *
-from pyspark.sql import SparkSession
-import pyspark.pandas as ps
-from pyspark_dist_explore import Histogram, hist
-from matplotlib import pyplot as plt
-
+from model import *
 
 DATASET_PATH = '../Data/dataset.csv'
-
+INITIAL_K = 2
+K = 20
 
 if __name__ == '__main__':
     # Initialize SparkSession
@@ -29,36 +19,10 @@ if __name__ == '__main__':
     df = spark.read.csv(DATASET_PATH, header=True)
     print("Dataset loaded.")
 
-    # Clean up dataset
-    print("Performing data cleanup...")
-    df = data_cleanup(df=df)
-    print("Data cleanup done.")
+    processed_df = preprocess(spark=spark, df=df)
 
-    # Data preprocessing
-    print("Handling nominal data...")
-    df = spark.createDataFrame(handle_nominal_data(df, 'Relationship Status'))
-    df = spark.createDataFrame(handle_nominal_data(df, 'Occupation'))
-    df = spark.createDataFrame(handle_nominal_data(df, 'Gender'))
-    print("Nominal data handled.")
-    print(df.show())
-    # Plot histograms directly from PySpark DataFrame
-    df.toPandas().hist(figsize=(16, 12))
-    plt.savefig('data_dist_hist.png')  # Save the plot as an image
-
-    print("Generating heatmap...")
-    generate_heatmap(df=df)
-    print("Heatmap generated.")
-
-    print("Dropping unnecessary columns...")
-    columns_to_drop = ['Male', 'Non-Binary', 'Non-binary']
-    df = df.drop(*columns_to_drop)
-    print("Columns dropped.")
-
-    print("Generating correlation histograms...")
-    generate_corr_hist(df=df, variables=['Hours Per Day', 'ADHD Score', 'Anxiety Score',
-                                         'Self Esteem Score', 'Depression Score', 'Total Score'])
-    print("Correlation histograms generated.")
-
-    print("Standaridize dataset...")
-    standardize_df = standardize_data(df)
-    print(standardize_df.show())
+    print("finding the best k value for KMeans clustering...")
+    best_k, silhouette_scores = find_k(processed_df, INITIAL_K, K)
+    print(silhouette_scores)
+    plot_silhouette_score(silhouette_scores, INITIAL_K, K)
+    spark.stop()

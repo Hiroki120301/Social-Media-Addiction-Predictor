@@ -2,7 +2,6 @@ from typing import List
 from matplotlib import pyplot as plt
 import pandas as pd
 import seaborn as sns
-import tempfile
 
 
 def generate_heatmap(df):
@@ -33,3 +32,12 @@ def generate_corr_hist(df: pd.DataFrame, variables: List):
 
     plt.tight_layout()
     plt.savefig('correlation_histogram.png')  # Save the plot as an image
+
+
+def plot_silhouette_score(silhouette_scores, initial_k, K):
+    plt.clf()
+    plt.plot(range(initial_k, K), silhouette_scores)
+    plt.xlabel('Number of Clusters (k)')
+    plt.ylabel('Silhouette Score')
+    plt.title('Silhouette Score vs Number of Clusters')
+    plt.savefig('silhouette_plot.png')
