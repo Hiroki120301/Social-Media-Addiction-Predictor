@@ -3,4 +3,3 @@ pandas
 seaborn
 matplotlib
 typing
-matplotlib
