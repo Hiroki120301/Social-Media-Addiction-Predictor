@@ -13,8 +13,10 @@ module load spark/3.2.0
 
 mkdir $PFSDIR/course-project
 WORKDIR=$PFSDIR/course-project
+
 cp -R ./Data $WORKDIR/Data
-find . -type f ! -name "*.py*" -exec cp {} $WORKDIR/
+cp p3env $WORKDIR/
+cp requirements.txt $WORKDIR/
 cp *.py $WORKDIR/
 
 cd $WORKDIR

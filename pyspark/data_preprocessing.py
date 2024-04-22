@@ -106,7 +106,7 @@ def handle_nominal_data(df, feature):
 
     # Drop the original 'Relationship Status' column
     df.drop(columns=[feature], inplace=True)
-
+    df.iteritems = df.items
     return df
 
 
