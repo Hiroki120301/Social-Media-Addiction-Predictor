@@ -23,12 +23,16 @@ def find_k(df, initial_k, K):
     return max(silhouette_score, key=silhouette_score.get), list(silhouette_score.values())
 
 
-def train(df, k):
+def train_fit(df, k=5):
+    evaluator = ClusteringEvaluator(predictionCol='cluster',
+                                    featuresCol='scaledFeatures',
+                                    metricName='silhouette',
+                                    distanceMeasure='squaredEuclidean')
 
     # Trains a k-means model.
-    kmeans = KMeans(featuresCol='scaledFeatures', k=k)
+    kmeans = KMeans(featuresCol='scaledFeatures', predictionCol='cluster', k=k)
     model = kmeans.fit(df)
-    predictions = model.transform(df)
+    clustered_data = model.transform(df)
 
     # Printing cluster centers
     centers = model.clusterCenters()
@@ -36,4 +40,5 @@ def train(df, k):
     for center in centers:
         print(center)
 
-    predictions.select('prediction').show(5)
+    wssse = evaluator.evaluate(clustered_data)
+    return wssse, clustered_data
