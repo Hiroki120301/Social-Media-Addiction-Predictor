@@ -65,7 +65,7 @@ def plot_kmeans_clusters(clustered_data):
             plt.xlabel(f'{features[i]} (Standardized)')
             plt.ylabel(f'{features[j]} (Standardized)')
             plt.title(
-                f'Scatter Plot of {features[i]} and {features[j]} Scores')
+                f'K-means Clustering Plot of {features[i]} and {features[j]} Scores')
             plt.colorbar(label='Cluster')
             plt.savefig(
                 f'{IMAGES_DIR}/Scatter Plot of {features[i]} and {features[j]} Scores.png')
