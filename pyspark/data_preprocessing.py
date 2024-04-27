@@ -147,7 +147,7 @@ def preprocess(spark, df):
 
     # Plot histograms directly from PySpark DataFrame
     df.toPandas().hist(figsize=(16, 12))
-    plt.savefig('data_dist_hist.png')  # Save the plot as an image
+    plt.savefig('./Images/data_dist_hist.png')  # Save the plot as an image
 
     print("Generating heatmap...")
     generate_heatmap(df=df)

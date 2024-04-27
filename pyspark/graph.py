@@ -2,8 +2,65 @@ from typing import List
 from matplotlib import pyplot as plt
 import pandas as pd
 import seaborn as sns
+from dowhy import CausalModel
+import networkx as nx
+import matplotlib.pyplot as plt
+from pgmpy.models import BayesianModel
+from pgmpy.estimators import BayesianEstimator
+from pgmpy.estimators import HillClimbSearch, BicScore
 
 IMAGES_DIR = './Images'
+
+
+def causal_ineference(clustered_data):
+    df = clustered_data.toPandas()
+    model = CausalModel(
+        data=df,
+        treatment='Total Score',
+        outcome='Hours Per Day',
+        common_causes=['ADHD Score', 'Anxiety Score',
+                       'Self Esteem Score', 'Depression Score']
+    )
+
+    # Identify causal effect
+    identified_estimand = model.identify_effect()
+
+    # Estimate causal effect
+    estimate = model.estimate_effect(identified_estimand,
+                                     method_name="backdoor.linear_regression")
+
+    print(estimate)
+    # Instantiate a HillClimbSearch object with the data
+    hc = HillClimbSearch(df)
+
+    # Use Hill climbing to learn the structure of the Bayesian Network
+    best_model_structure = hc.estimate(scoring_method=BicScore(df))
+
+    # Instantiate a BayesianModel with the learned structure
+    best_model = BayesianModel(best_model_structure.edges())
+
+    # Fit the model to the data using Bayesian parameter estimation
+    best_model.fit(df, estimator=BayesianEstimator)
+
+    # Print the learned graph structure
+    print("Learned Causal Graph Structure:")
+    print(best_model_structure.edges())
+
+    # Create a directed graph
+    G = nx.DiGraph()
+
+    # Add edges from the learned model structure
+    G.add_edges_from(best_model_structure.edges())
+
+    # Draw the graph
+    pos = nx.spring_layout(G)  # positions for all nodes
+    nx.draw(G, pos, with_labels=True, node_size=700, node_color="skyblue",
+            font_size=10, font_weight="bold", arrows=True)
+    plt.title("Learned Causal Graph Structure")
+    plt.figure(figsize=(70, 50))  # Adjust width and height as needed
+
+    # Show plot
+    plt.savefig(f'{IMAGES_DIR}/causal_inference.png')
 
 
 def generate_heatmap(df):
@@ -48,12 +105,6 @@ def plot_silhouette_score(silhouette_scores, initial_k, K):
 
 def plot_kmeans_clusters(clustered_data):
     clustered_data_pd = clustered_data.toPandas()
-    # plt.scatter(clustered_data_pd[:, 0], clustered_data_pd[:,
-    #             1], c=clustered_data_pd["cluster"], cmap='viridis')
-    # plt.title("K-means Clustering with PySpark MLlib")
-    # plt.colorbar().set_label("Cluster")
-    # plt.savefig('result.png')  # Save the plot as an image
-
     features = ['Anxiety Score', 'Self Esteem Score',
                 'Depression Score', 'ADHD Score']
 
