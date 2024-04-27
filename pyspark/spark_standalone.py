@@ -14,7 +14,7 @@ if __name__ == '__main__':
     spark = SparkSession.builder \
         .appName("SocialMediaAddictionPredictor") \
         .getOrCreate()
-
+    spark.sparkContext.setLogLevel("WARN")
     # Loading dataset
     print("Reading the dataset...")
     df = spark.read.csv(DATASET_PATH, header=True)

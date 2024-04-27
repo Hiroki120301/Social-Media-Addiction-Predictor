@@ -52,6 +52,16 @@ def causal_ineference(clustered_data):
     # Add edges from the learned model structure
     G.add_edges_from(best_model_structure.edges())
 
+    # Draw the graph
+    plt.figure(figsize=(20, 15))  # Adjust width and height as needed
+    plt.title("Learned Causal Graph Structure")
+    pos = nx.spring_layout(G)  # positions for all nodes
+    nx.draw(G, pos, with_labels=True, node_size=1000, node_color="skyblue",
+            font_size=12, font_weight="bold", arrows=True)
+
+    # Show plot
+    plt.savefig(f'{IMAGES_DIR}/causal_inference.png')
+
 
 def generate_heatmap(df):
     # Calculate the correlation matrix
