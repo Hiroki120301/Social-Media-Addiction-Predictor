@@ -7,7 +7,7 @@ from model import *
 
 DATASET_PATH = './Data/dataset.csv'
 INITIAL_K = 2
-K = 3
+K = 20
 
 if __name__ == '__main__':
     # Initialize SparkSession

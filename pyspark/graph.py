@@ -52,16 +52,6 @@ def causal_ineference(clustered_data):
     # Add edges from the learned model structure
     G.add_edges_from(best_model_structure.edges())
 
-    # Draw the graph
-    pos = nx.spring_layout(G)  # positions for all nodes
-    nx.draw(G, pos, with_labels=True, node_size=700, node_color="skyblue",
-            font_size=10, font_weight="bold", arrows=True)
-    plt.title("Learned Causal Graph Structure")
-    plt.figure(figsize=(70, 50))  # Adjust width and height as needed
-
-    # Show plot
-    plt.savefig(f'{IMAGES_DIR}/causal_inference.png')
-
 
 def generate_heatmap(df):
     # Calculate the correlation matrix
@@ -95,12 +85,13 @@ def generate_corr_hist(df: pd.DataFrame, variables: List):
 
 
 def plot_silhouette_score(silhouette_scores, initial_k, K):
-    plt.clf()
+    plt.figure(figsize=(8, 6))
     plt.plot(range(initial_k, K), silhouette_scores)
     plt.xlabel('Number of Clusters (k)')
     plt.ylabel('Silhouette Score')
     plt.title('Silhouette Score vs Number of Clusters')
     plt.savefig(f'{IMAGES_DIR}/silhouette_plot.png')
+    plt.close()
 
 
 def plot_kmeans_clusters(clustered_data):
@@ -110,7 +101,7 @@ def plot_kmeans_clusters(clustered_data):
 
     for i in range(len(features)):
         for j in range(i+1, len(features)):
-            plt.figure()
+            plt.figure(figsize=(8, 6))
             plt.scatter(clustered_data_pd[features[i]], clustered_data_pd[features[j]],
                         c=clustered_data_pd['cluster'], cmap='viridis')
             plt.xlabel(f'{features[i]} (Standardized)')
