@@ -163,8 +163,4 @@ def preprocess(spark, df):
                                          'Self Esteem Score', 'Depression Score', 'Total Score'])
     print("Correlation histograms generated.")
 
-    # print("Standaridize dataset...")
-    # final_df = standardize_data(df)
-    # print(final_df.show(5))
-
     return df

@@ -29,7 +29,7 @@ def find_k(df, initial_k, K):
     return max(silhouette_score, key=silhouette_score.get), list(silhouette_score.values())
 
 
-def train_fit(df, k=5):
+def train_fit(df, k=3):
     evaluator = ClusteringEvaluator(predictionCol='cluster',
                                     featuresCol='scaledFeatures',
                                     metricName='silhouette',
