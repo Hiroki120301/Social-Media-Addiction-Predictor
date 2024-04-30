@@ -27,7 +27,7 @@ if __name__ == '__main__':
     best_k, silhouette_scores = find_k(final_dataset, INITIAL_K, K)
     print(f"Best K value for KMeans Clustering is: {best_k}")
     plot_silhouette_score(silhouette_scores, INITIAL_K, K)
-    wssse, output = train_fit(final_dataset)
+    wssse, output = train_fit(final_dataset, best_k)
     print(f"Within Set Sum of Squared Errors (WSSSE) = {wssse}")
     plot_kmeans_clusters(output)
     spark.stop()
