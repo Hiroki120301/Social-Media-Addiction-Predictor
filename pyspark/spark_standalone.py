@@ -1,6 +1,5 @@
 from pyspark.sql import SparkSession
 from matplotlib import pyplot as plt
-import reina
 from data_preprocessing import *
 from graph import *
 from model import *
